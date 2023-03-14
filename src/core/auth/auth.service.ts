@@ -14,8 +14,16 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException();
     }
+
+    const userGet = await this.databaseService.getRepos().userRepo.findOne({
+      where: {
+        id: user.id
+      }
+    });
+
+    const { pwd, ...result } = userGet;
     return {
-      user
+      user: result
     }
   }
 
