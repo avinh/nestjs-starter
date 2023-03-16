@@ -6,7 +6,9 @@ import { LocalStrategy } from './local.strategy';
 import { AuthController } from './auth.controller';
 import { DatabaseModule } from '../database/database.module';
 import { JwtModule } from '@nestjs/jwt';
-import environments from '../config/environments';
+import environments from 'src/config/environments';
+import { GoogleAuthenticationService } from '../google-authentication/google-authentication.service';
+import EmailService from '../email/email.service';
 
 @Module({
   imports: [UserModule, PassportModule, DatabaseModule,
@@ -14,7 +16,7 @@ import environments from '../config/environments';
       secret: environments().JWT_SECRECT_KEY,
       signOptions: { expiresIn: '1d' },
     })],
-  providers: [AuthService, LocalStrategy],
+  providers: [AuthService, LocalStrategy, GoogleAuthenticationService, EmailService],
   controllers: [AuthController],
   exports: [AuthService]
 })

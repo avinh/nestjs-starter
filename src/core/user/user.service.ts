@@ -7,21 +7,30 @@ export class UserService {
     constructor(
         private readonly databaseService: DatabaseService,
     ) { }
-    async info(user) {
-        if (!user) {
-            return {
-                status: false
-            }
-        }
-        return {
-            status: true,
-            user
-        }
+
+    async createWithGoogle(email: string, username: string) {
+        const newUser = await this.databaseService.getRepos().userRepo.create({
+            email,
+            username,
+            isRegisteredWithGoogle: true,
+            isEmailConfirmed: true
+        });
+        await this.databaseService.getRepos().userRepo.save(newUser);
+        return newUser;
     }
-    async findOne(username: string): Promise<UserEntity | undefined> {
+
+    async getByUsername(username: string): Promise<UserEntity | undefined> {
         return this.databaseService.getRepos().userRepo.findOne({
             where: {
                 username: username
+            }
+        });
+    }
+
+    async getByEmail(email: string): Promise<UserEntity | undefined> {
+        return this.databaseService.getRepos().userRepo.findOne({
+            where: {
+                email: email
             }
         });
     }

@@ -1,5 +1,6 @@
 import { Column, Entity, Index } from 'typeorm';
 import { BaseEntity } from '../../../entities/base.entity';
+import { Exclude } from 'class-transformer';
 @Entity({ name: 'users' })
 export class UserEntity extends BaseEntity {
     @Index()
@@ -11,14 +12,7 @@ export class UserEntity extends BaseEntity {
     })
     username?: string;
 
-    @Column({
-        name: "pwd",
-        length: 100,
-        nullable: true,
-        default: null,
-    })
-    pwd?: string;
-
+    @Index()
     @Column({
         name: 'email',
         length: 100,
@@ -27,10 +21,25 @@ export class UserEntity extends BaseEntity {
     })
     email?: string;
 
+    @Column({
+        name: "pwd",
+        length: 100,
+        nullable: true,
+        default: null,
+    })
+    @Exclude()
+    pwd?: string;
+
     @Column('boolean', {
         name: 'activated',
         nullable: true,
         default: false,
     })
     activated?: boolean;
+
+    @Column({ default: false })
+    public isRegisteredWithGoogle: boolean;
+
+    @Column({ default: false })
+    public isEmailConfirmed: boolean;
 }
