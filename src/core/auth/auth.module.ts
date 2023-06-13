@@ -6,7 +6,7 @@ import { LocalStrategy } from './local.strategy';
 import { AuthController } from './auth.controller';
 import { DatabaseModule } from '../database/database.module';
 import { JwtModule } from '@nestjs/jwt';
-import environments from '../config/environments';
+import environments from 'src/config/environments';
 
 @Module({
   imports: [UserModule, PassportModule, DatabaseModule,

@@ -1,5 +1,5 @@
 
-import environments from "src/core/config/environments";
+import environments from "src/config/environments";
 import { DataSource, DataSourceOptions } from "typeorm";
 
 export const dataSourceOptions: DataSourceOptions = {
