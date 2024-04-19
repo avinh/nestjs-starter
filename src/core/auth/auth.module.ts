@@ -9,13 +9,17 @@ import { JwtModule } from '@nestjs/jwt';
 import environments from 'src/config/environments';
 
 @Module({
-  imports: [UserModule, PassportModule, DatabaseModule,
+  imports: [
+    UserModule,
+    PassportModule,
+    DatabaseModule,
     JwtModule.register({
       secret: environments().JWT_SECRECT_KEY,
       signOptions: { expiresIn: '1d' },
-    })],
+    }),
+  ],
   providers: [AuthService, LocalStrategy],
   controllers: [AuthController],
-  exports: [AuthService]
+  exports: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}

@@ -1,14 +1,21 @@
-import { Injectable, NotAcceptableException, UnauthorizedException } from '@nestjs/common';
-import { DatabaseService } from '../database/database.service';
+import {
+  Injectable,
+  NotAcceptableException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 import IUser from 'src/interfaces/user.interface';
+import { DatabaseService } from '../database/database.service';
 import { ChangePassRequestDTO } from './dto/change-pass.dto';
 import { SignUpRequestDTO } from './dto/signup.dto';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly databaseService: DatabaseService, private readonly jwtService: JwtService) { }
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async info(user) {
     if (!user) {
@@ -17,14 +24,13 @@ export class AuthService {
 
     const userGet = await this.databaseService.getRepos().userRepo.findOne({
       where: {
-        id: user.id
-      }
+        id: user.id,
+      },
     });
 
-    const { pwd, ...result } = userGet;
     return {
-      user: result
-    }
+      user: userGet,
+    };
   }
 
   async changePassword(user, dto: ChangePassRequestDTO) {
@@ -39,12 +45,14 @@ export class AuthService {
 
     const saltOrRounds = 10;
     const hashedPassword = await bcrypt.hash(dto.new_password, saltOrRounds);
-    const userUpdate = await this.databaseService.getRepos().userRepo.update(user.id, {
-      pwd: hashedPassword
-    });
+    const userUpdate = await this.databaseService
+      .getRepos()
+      .userRepo.update(user.id, {
+        pwd: hashedPassword,
+      });
 
     if (!userUpdate.affected) {
-      throw new NotAcceptableException("Update failed")
+      throw new NotAcceptableException('Update failed');
     }
 
     return { user };
@@ -53,25 +61,28 @@ export class AuthService {
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.databaseService.getRepos().userRepo.findOne({
       where: {
-        username: username
-      }
+        username: username,
+      },
     });
 
     if (!user) {
-      throw new UnauthorizedException()
+      throw new UnauthorizedException();
     }
 
     const isMatch = await bcrypt.compare(pass, user.pwd);
 
     if (isMatch) {
-      const { pwd, ...result } = user;
-      return result;
+      return user;
     }
     return null;
   }
 
   async login(user: IUser) {
-    const userResult = { id: user.id, username: user.username, email: user.email };
+    const userResult = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    };
     return {
       user: user,
       access_token: this.jwtService.sign(userResult),
@@ -84,14 +95,11 @@ export class AuthService {
       const hashedPassword = await bcrypt.hash(dto.password, saltOrRounds);
 
       const check = await this.databaseService.getRepos().userRepo.findOne({
-        where: [
-          { email: dto.email },
-          { username: dto.username }
-        ]
-      })
+        where: [{ email: dto.email }, { username: dto.username }],
+      });
 
       if (check) {
-        throw new NotAcceptableException("Registration failed")
+        throw new NotAcceptableException('Registration failed');
       }
 
       const userUpdate = await this.databaseService.getRepos().userRepo.save({
@@ -101,14 +109,18 @@ export class AuthService {
         lastLogin: new Date(),
       });
 
-      const user = { id: userUpdate.id, username: userUpdate.username, email: userUpdate.email };
+      const user = {
+        id: userUpdate.id,
+        username: userUpdate.username,
+        email: userUpdate.email,
+      };
 
       return {
         user,
         access_token: this.jwtService.sign(user),
       };
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 }

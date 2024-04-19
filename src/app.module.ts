@@ -1,20 +1,19 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DatabaseModule } from './core/database/database.module';
-import { ConfigModule } from '@nestjs/config';
-import { UserModule } from './core/user/user.module';
 import { AuthModule } from './core/auth/auth.module';
+import { DatabaseModule } from './core/database/database.module';
+import { UserModule } from './core/user/user.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, }),
+    ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
     UserModule,
-    AuthModule
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-
-export class AppModule { }
+export class AppModule {}
